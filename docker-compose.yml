@@ -1,0 +1,43 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: vehicle-maintenance-db
+    environment:
+      POSTGRES_DB: vehicle_maintenance
+      POSTGRES_USER: kavak
+      POSTGRES_PASSWORD: kavak123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kavak -d vehicle_maintenance"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - vehicle-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vehicle-maintenance-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/vehicle_maintenance
+      SPRING_DATASOURCE_USERNAME: kavak
+      SPRING_DATASOURCE_PASSWORD: kavak123
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - vehicle-network
+
+volumes:
+  postgres_data:
+
+networks:
+  vehicle-network:
+    driver: bridge
