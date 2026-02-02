@@ -1,0 +1,320 @@
+# .cursorrules - Vehicle Maintenance System for Kavak Challenge
+
+## Project Context
+This is a Vehicle Maintenance Control System for Kavak's technical challenge.
+Goal: Build a clean, well-architected REST API in 2-3 hours that demonstrates solid backend skills.
+
+## Tech Stack
+- Java 17
+- Spring Boot 3.5.10
+- PostgreSQL 15 (Docker)
+- Spring Data JPA
+- Lombok
+- Maven
+- Bean Validation
+
+## Architecture Pattern
+This project follows Clean Architecture with explicit layers:
+presentation/     → HTTP layer (Controllers, DTOs, Exception Handlers)
+application/      → Orchestration layer (Services, Use Cases, Mappers)
+domain/           → Business logic (Entities, Enums, Repositories interfaces, Domain Exceptions)
+infrastructure/   → Technical implementation (JPA repositories, Configs)
+
+**Flow:** Controller → Service → UseCase → Repository → Database
+
+## Git Workflow Strategy
+
+### Branch Strategy
+- `main` branch: stable, working code only
+- Feature branches: `feature/docker-setup`, `feature/domain-layer`, `feature/registrar-vehiculo-usecase`, etc.
+
+### Commit & Merge Strategy
+Each logical unit of work should be a separate feature branch with commits, then merged to main:
+
+1. **Phase 1: Docker & Database Setup**
+   - Branch: `feature/docker-setup`
+   - Files: `docker-compose.yml`, `application.yml`, DB config
+   - Commit: "feat: add docker-compose with PostgreSQL and application config"
+   - Merge to main after verification
+
+2. **Phase 2: Domain Layer (Foundation)**
+   - Branch: `feature/domain-layer`
+   - Files: All entities, enums, exceptions, repository interfaces
+   - Commit: "feat: add domain layer with entities, enums, and repository interfaces"
+   - Merge to main after verification
+
+3. **Phase 3: Infrastructure Layer**
+   - Branch: `feature/infrastructure-layer`
+   - Files: Repository implementations, configs
+   - Commit: "feat: add infrastructure layer with JPA repository implementations"
+   - Merge to main
+
+4. **Phase 4: Individual Use Cases (one branch per use case)**
+   - Branch: `feature/registrar-vehiculo-usecase`
+   - Files: UseCase, Mapper, Service, DTO, Controller for that specific feature
+   - Commit: "feat: add RegistrarVehiculo use case with service and controller"
+   - Merge to main
+   
+   - Branch: `feature/actualizar-kilometraje-usecase`
+   - Commit: "feat: add ActualizarKilometraje use case"
+   - Merge to main
+   
+   - Branch: `feature/registrar-mantenimiento-usecase`
+   - Commit: "feat: add RegistrarMantenimiento use case"
+   - Merge to main
+   
+   - Branch: `feature/cambiar-estado-mantenimiento-usecase`
+   - Commit: "feat: add CambiarEstadoMantenimiento use case with state validation"
+   - Merge to main
+   
+   - Branch: `feature/consultar-historial-usecase`
+   - Commit: "feat: add ConsultarHistorial use case"
+   - Merge to main
+   
+   - Branch: `feature/calcular-disponibilidad-usecase`
+   - Commit: "feat: add CalcularDisponibilidad use case"
+   - Merge to main
+
+5. **Phase 5: Testing & Documentation**
+   - Branch: `feature/tests`
+   - Commit: "test: add unit and integration tests"
+   - Merge to main
+   
+   - Branch: `feature/documentation`
+   - Commit: "docs: add comprehensive README with API examples"
+   - Merge to main
+
+### Commit Message Convention
+Follow conventional commits:
+- `feat:` new feature
+- `fix:` bug fix
+- `refactor:` code refactoring
+- `test:` adding tests
+- `docs:` documentation changes
+- `chore:` tooling, configs
+
+Examples:
+- `feat: add Vehiculo entity with JPA annotations`
+- `feat: implement RegistrarVehiculoUseCase with patente validation`
+- `test: add unit tests for state transition validation`
+- `docs: update README with docker setup instructions`
+
+## Development Workflow
+
+When starting a new feature, ALWAYS:
+1. Ask me: "Should I create a new branch for this feature?"
+2. Suggest branch name following convention: `feature/[descriptive-name]`
+3. After implementation, remind me to:
+   - Test the feature
+   - Commit with proper message
+   - Merge to main
+   - Delete feature branch
+
+## Coding Standards
+
+### General Rules
+- Use English for all code (classes, methods, variables)
+- Use Spanish for business domain terms when it makes sense (e.g., "patente")
+- Prefer composition over inheritance
+- Keep methods small and focused (max 20 lines)
+- One class = one responsibility (SOLID)
+- Always use constructor injection (never @Autowired on fields)
+
+### Naming Conventions
+- Entities: `Vehiculo`, `Mantenimiento` (singular, domain language)
+- DTOs: `VehiculoRequestDTO`, `VehiculoResponseDTO`, `MantenimientoDTO`
+- Use Cases: `RegistrarVehiculoUseCase`, `CompletarMantenimientoUseCase` (verb + noun + UseCase)
+- Services: `VehiculoService`, `MantenimientoService` (orchestration)
+- Repositories: `VehiculoRepository`, `MantenimientoRepository` (interfaces in domain/)
+- Repository Impls: `VehiculoRepositoryImpl` (in infrastructure/persistence/)
+- Controllers: `VehiculoController`, `MantenimientoController`
+- Exceptions: `VehiculoNotFoundException`, `InvalidStateTransitionException`
+
+### Lombok Usage
+Always use Lombok annotations to reduce boilerplate:
+- `@Data` for DTOs (getters, setters, toString, equals, hashCode)
+- `@Builder` for complex object creation
+- `@NoArgsConstructor` and `@AllArgsConstructor` for entities when needed
+- `@RequiredArgsConstructor` for services with final dependencies
+- `@Slf4j` for logging
+
+### Entity Design
+```java
+@Entity
+@Table(name = "vehiculos")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Vehiculo {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+    
+    @Column(unique = true, nullable = false)
+    private String patente;
+    
+    // ... other fields
+    
+    @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL)
+    private List<Mantenimiento> mantenimientos = new ArrayList<>();
+}
+```
+
+### Use Case Pattern
+```java
+@Component
+@RequiredArgsConstructor
+public class RegistrarVehiculoUseCase {
+    private final VehiculoRepository vehiculoRepository;
+    
+    public Vehiculo execute(Vehiculo vehiculo) {
+        // 1. Validate business rules
+        if (vehiculoRepository.existsByPatente(vehiculo.getPatente())) {
+            throw new DuplicatePatenteException("Patente already exists");
+        }
+        
+        // 2. Execute business logic
+        // 3. Persist
+        return vehiculoRepository.save(vehiculo);
+    }
+}
+```
+
+### Service Pattern
+```java
+@Service
+@RequiredArgsConstructor
+public class VehiculoService {
+    private final RegistrarVehiculoUseCase registrarVehiculoUseCase;
+    private final VehiculoMapper vehiculoMapper;
+    
+    public VehiculoResponseDTO registrarVehiculo(VehiculoRequestDTO request) {
+        Vehiculo vehiculo = vehiculoMapper.toEntity(request);
+        Vehiculo saved = registrarVehiculoUseCase.execute(vehiculo);
+        return vehiculoMapper.toResponseDTO(saved);
+    }
+}
+```
+
+### Controller Pattern
+```java
+@RestController
+@RequestMapping("/api/vehiculos")
+@RequiredArgsConstructor
+public class VehiculoController {
+    private final VehiculoService vehiculoService;
+    
+    @PostMapping
+    public ResponseEntity<VehiculoResponseDTO> registrar(
+            @Valid @RequestBody VehiculoRequestDTO request) {
+        VehiculoResponseDTO response = vehiculoService.registrarVehiculo(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+}
+```
+
+### Exception Handling
+- Create custom exceptions in `domain/exception/`
+- Use `@ControllerAdvice` for global exception handling
+- Return consistent error responses with `ErrorResponseDTO`
+
+### Validation
+- Use Bean Validation annotations in DTOs: `@NotNull`, `@NotBlank`, `@Size`, `@Pattern`
+- Business validations go in Use Cases
+- HTTP validations go in Controllers with `@Valid`
+
+## Business Rules (CRITICAL)
+
+### State Transitions (Mantenimiento)
+Valid transitions:
+- PENDIENTE → EN_PROCESO
+- PENDIENTE → CANCELADO
+- EN_PROCESO → COMPLETADO
+- EN_PROCESO → CANCELADO
+
+Invalid transitions (must throw exception):
+- COMPLETADO → any state (completed is final)
+- CANCELADO → COMPLETADO (cannot complete cancelled)
+
+### Vehicle Availability
+A vehicle is NOT available if it has any maintenance with status:
+- PENDIENTE
+- EN_PROCESO
+
+A vehicle IS available if all its maintenances are:
+- COMPLETADO
+- CANCELADO
+- Or has no maintenances
+
+### Cost Calculation
+Total maintenance cost should ONLY include maintenances with status COMPLETADO.
+Ignore PENDIENTE, EN_PROCESO, and CANCELADO maintenances.
+
+### Patente (License Plate)
+- Must be unique across all vehicles
+- Format validation can be added but not required for MVP
+
+## Testing Guidelines
+- Write unit tests for Use Cases (mock repositories)
+- Write integration tests for Controllers (use @SpringBootTest)
+- Test all business rules explicitly
+- Test invalid state transitions
+- Test edge cases (null values, duplicates, etc.)
+
+## Performance Considerations
+- Use `@Transactional` on service methods that modify data
+- Use `FetchType.LAZY` for relationships by default
+- Add indexes on frequently queried fields (patente, estado)
+
+## Documentation
+- Add JavaDoc to Use Cases (they contain business logic)
+- Add clear comments for complex business rules
+- Keep README updated with API endpoints and examples
+
+## What to Avoid
+- Don't use field injection (@Autowired on fields)
+- Don't put business logic in Controllers or Services (belongs in Use Cases)
+- Don't create circular dependencies between layers
+- Don't use raw SQL queries unless necessary (prefer JPA)
+- Don't expose entities directly in API responses (use DTOs)
+- Don't ignore exceptions (always handle or propagate)
+
+## Priority Order
+When generating code, follow this order:
+1. Docker & Database setup
+2. Domain layer (Entities, Enums, Exceptions, Repository interfaces)
+3. Infrastructure layer (Repository implementations, Configs)
+4. Application layer (Use Cases one by one, then Mappers, then Services)
+5. Presentation layer (DTOs, Controllers, Exception Handlers)
+6. Tests
+
+## Quick Commands
+When I say "create the domain", generate: Entities, Enums, Exceptions, Repository interfaces
+When I say "create use cases", generate all use case classes with business logic
+When I say "create the API", generate: DTOs, Controllers, Exception Handlers
+
+## Final Notes
+- Prioritize clean, readable code over clever optimizations
+- This is a 2-3 hour MVP, not production code (but should demonstrate good practices)
+- Focus on business rules implementation over advanced features
+- Consistency is more important than perfection
+- ALWAYS work in feature branches, one feature at a time
+- Each use case = one branch + one merge
+
+# Cursor te sugerirá:
+"Should I create branch 'feature/docker-setup' for Docker configuration?"
+
+# Tú respondes: "Yes"
+
+# Cursor genera el código
+# Tú verificas que funciona
+
+# Luego commiteas:
+git add docker-compose.yml application.yml
+git commit -m "feat: add docker-compose with PostgreSQL and application config"
+git checkout main
+git merge feature/docker-setup
+git branch -d feature/docker-setup
+
+# Y así con cada feature...
