@@ -425,6 +425,44 @@ http://localhost:8080/v3/api-docs
 **Errores posibles:**
 - `404 Not Found` - Vehículo no existe
 
+#### 8. Obtener Mantenimientos Activos (GET /api/vehicles/{licensePlate}/maintenances/active)
+
+**Endpoint:** `GET /api/vehicles/{licensePlate}/maintenances/active`
+
+**Response exitosa (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "vehicleId": 1,
+    "type": "OIL_CHANGE",
+    "description": "Cambio de aceite preventivo",
+    "creationDate": "2024-01-15T10:30:00",
+    "status": "PENDING",
+    "estimatedCost": 300.00,
+    "finalCost": null
+  },
+  {
+    "id": 2,
+    "vehicleId": 1,
+    "type": "BRAKES",
+    "description": "Revisión de frenos",
+    "creationDate": "2024-01-20T14:00:00",
+    "status": "IN_PROGRESS",
+    "estimatedCost": 500.00,
+    "finalCost": null
+  }
+]
+```
+
+**Regla de negocio:**
+- Retorna **solo** mantenimientos con estado `PENDING` o `IN_PROGRESS`
+- Filtra automáticamente los mantenimientos `COMPLETED` y `CANCELLED`
+- Retorna lista vacía si no hay mantenimientos activos
+
+**Errores posibles:**
+- `404 Not Found` - Vehículo no existe
+
 ---
 
 ## 🧪 Testing
