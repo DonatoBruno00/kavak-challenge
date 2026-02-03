@@ -5,9 +5,11 @@ import com.kavak.vehicle_maintenance.domain.Vehicle;
 import com.kavak.vehicle_maintenance.dto.request.UpdateMileageRequestDTO;
 import com.kavak.vehicle_maintenance.dto.request.VehicleRequestDTO;
 import com.kavak.vehicle_maintenance.dto.response.MaintenanceResponseDTO;
+import com.kavak.vehicle_maintenance.dto.response.VehicleAvailabilityResponseDTO;
 import com.kavak.vehicle_maintenance.dto.response.VehicleResponseDTO;
 import com.kavak.vehicle_maintenance.mapper.MaintenanceMapper;
 import com.kavak.vehicle_maintenance.mapper.VehicleMapper;
+import com.kavak.vehicle_maintenance.usecase.CheckVehicleAvailabilityUseCase;
 import com.kavak.vehicle_maintenance.usecase.GetVehicleMaintenancesUseCase;
 import com.kavak.vehicle_maintenance.usecase.GetVehicleUseCase;
 import com.kavak.vehicle_maintenance.usecase.RegisterVehicleUseCase;
@@ -29,6 +31,7 @@ public class VehicleService {
     private final UpdateVehicleMileageUseCase updateVehicleMileageUseCase;
     private final GetVehicleUseCase getVehicleUseCase;
     private final GetVehicleMaintenancesUseCase getVehicleMaintenancesUseCase;
+    private final CheckVehicleAvailabilityUseCase checkVehicleAvailabilityUseCase;
     private final VehicleMapper vehicleMapper;
     private final MaintenanceMapper maintenanceMapper;
     
@@ -53,5 +56,9 @@ public class VehicleService {
         return maintenances.stream()
                 .map(maintenanceMapper::toResponseDTO)
                 .toList();
+    }
+    
+    public VehicleAvailabilityResponseDTO checkAvailability(String licensePlate) {
+        return checkVehicleAvailabilityUseCase.execute(licensePlate);
     }
 }
