@@ -4,6 +4,7 @@ import com.kavak.vehicle_maintenance.dto.request.UpdateMileageRequestDTO;
 import com.kavak.vehicle_maintenance.dto.request.VehicleRequestDTO;
 import com.kavak.vehicle_maintenance.dto.response.MaintenanceResponseDTO;
 import com.kavak.vehicle_maintenance.dto.response.VehicleAvailabilityResponseDTO;
+import com.kavak.vehicle_maintenance.dto.response.VehicleMaintenanceCostResponseDTO;
 import com.kavak.vehicle_maintenance.dto.response.VehicleResponseDTO;
 import com.kavak.vehicle_maintenance.service.VehicleService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -55,6 +56,13 @@ public class VehicleController {
     public ResponseEntity<List<MaintenanceResponseDTO>> getActiveMaintenances(
             @PathVariable String licensePlate) {
         List<MaintenanceResponseDTO> response = vehicleService.getActiveMaintenances(licensePlate);
+        return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/{licensePlate}/maintenances/total-cost")
+    public ResponseEntity<VehicleMaintenanceCostResponseDTO> calculateTotalMaintenanceCost(
+            @PathVariable String licensePlate) {
+        VehicleMaintenanceCostResponseDTO response = vehicleService.calculateTotalMaintenanceCost(licensePlate);
         return ResponseEntity.ok(response);
     }
     
