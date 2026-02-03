@@ -6,9 +6,11 @@ import com.kavak.vehicle_maintenance.dto.request.UpdateMileageRequestDTO;
 import com.kavak.vehicle_maintenance.dto.request.VehicleRequestDTO;
 import com.kavak.vehicle_maintenance.dto.response.MaintenanceResponseDTO;
 import com.kavak.vehicle_maintenance.dto.response.VehicleAvailabilityResponseDTO;
+import com.kavak.vehicle_maintenance.dto.response.VehicleMaintenanceCostResponseDTO;
 import com.kavak.vehicle_maintenance.dto.response.VehicleResponseDTO;
 import com.kavak.vehicle_maintenance.mapper.MaintenanceMapper;
 import com.kavak.vehicle_maintenance.mapper.VehicleMapper;
+import com.kavak.vehicle_maintenance.usecase.CalculateTotalMaintenanceCostUseCase;
 import com.kavak.vehicle_maintenance.usecase.CheckVehicleAvailabilityUseCase;
 import com.kavak.vehicle_maintenance.usecase.GetActiveMaintenancesUseCase;
 import com.kavak.vehicle_maintenance.usecase.GetVehicleMaintenancesUseCase;
@@ -33,6 +35,7 @@ public class VehicleService {
     private final GetVehicleUseCase getVehicleUseCase;
     private final GetVehicleMaintenancesUseCase getVehicleMaintenancesUseCase;
     private final GetActiveMaintenancesUseCase getActiveMaintenancesUseCase;
+    private final CalculateTotalMaintenanceCostUseCase calculateTotalMaintenanceCostUseCase;
     private final CheckVehicleAvailabilityUseCase checkVehicleAvailabilityUseCase;
     private final VehicleMapper vehicleMapper;
     private final MaintenanceMapper maintenanceMapper;
@@ -65,6 +68,10 @@ public class VehicleService {
         return activeMaintenances.stream()
                 .map(maintenanceMapper::toResponseDTO)
                 .toList();
+    }
+    
+    public VehicleMaintenanceCostResponseDTO calculateTotalMaintenanceCost(String licensePlate) {
+        return calculateTotalMaintenanceCostUseCase.execute(licensePlate);
     }
     
     public VehicleAvailabilityResponseDTO checkAvailability(String licensePlate) {

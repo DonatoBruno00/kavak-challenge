@@ -463,6 +463,27 @@ http://localhost:8080/v3/api-docs
 **Errores posibles:**
 - `404 Not Found` - Vehículo no existe
 
+#### 9. Calcular Costo Total de Mantenimiento (GET /api/vehicles/{licensePlate}/maintenances/total-cost)
+
+**Endpoint:** `GET /api/vehicles/{licensePlate}/maintenances/total-cost`
+
+**Response exitosa (200 OK):**
+```json
+{
+  "licensePlate": "ABC-1234",
+  "totalCost": 1250.50
+}
+```
+
+**Regla de negocio:**
+- **Solo considera** mantenimientos con estado `COMPLETED` que tengan `finalCost`
+- Ignora mantenimientos `PENDING`, `IN_PROGRESS` y `CANCELLED`
+- Retorna `0.00` si no hay mantenimientos completados
+- Suma precisa usando `BigDecimal` para valores monetarios
+
+**Errores posibles:**
+- `404 Not Found` - Vehículo no existe
+
 ---
 
 ## 🧪 Testing
@@ -489,6 +510,33 @@ SELECT * FROM maintenances WHERE vehicle_id = '<uuid>';
 ```
 ---
 
+## 📝 Consideraciones para Producción
+
+Esta implementación priorizó **claridad y rapidez** para el challenge técnico. En un entorno productivo, consideraría las siguientes mejoras:
+
+### Arquitectura y Diseño
+- **Value Objects**: Encapsular conceptos del dominio (LicensePlate, Money, Mileage) con validaciones inmutables
+- **Interfaces para servicios**: Desacoplar implementaciones para facilitar testing y cambios futuros
+- **Records de Java**: Usar records para DTOs inmutables en lugar de clases con Lombok
+- **Domain Events**: Publicar eventos para acciones críticas (VehicleRegistered, MaintenanceCompleted)
+
+### Testing y Calidad
+- **Integration Tests**: Tests end-to-end con TestContainers y base de datos real
+
+### Performance y Escalabilidad
+- **Caching**: Redis para consultas frecuentes (disponibilidad, costos totales)
+- **Paginación**: Implementar en endpoints que retornan listas
+- **Índices de base de datos**: Optimizar búsquedas por patente y estado
+
+### Seguridad
+- **Autenticación/Autorización**: Spring Security con JWT/OAuth2
+- **Input Sanitization**: Validaciones adicionales contra inyección
+- **Auditoría**: Registro de cambios críticos con fecha/usuario
+
+### DevOps
+- **CI/CD**: Pipelines automatizados (GitHub Actions/Jenkins)
+
+---
 ## 📝 Notas de Desarrollo
 - Cada use case se implementa en su propia branch
 - Clean commits siguiendo Conventional Commits
