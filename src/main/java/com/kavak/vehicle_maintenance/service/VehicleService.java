@@ -10,6 +10,7 @@ import com.kavak.vehicle_maintenance.dto.response.VehicleResponseDTO;
 import com.kavak.vehicle_maintenance.mapper.MaintenanceMapper;
 import com.kavak.vehicle_maintenance.mapper.VehicleMapper;
 import com.kavak.vehicle_maintenance.usecase.CheckVehicleAvailabilityUseCase;
+import com.kavak.vehicle_maintenance.usecase.GetActiveMaintenancesUseCase;
 import com.kavak.vehicle_maintenance.usecase.GetVehicleMaintenancesUseCase;
 import com.kavak.vehicle_maintenance.usecase.GetVehicleUseCase;
 import com.kavak.vehicle_maintenance.usecase.RegisterVehicleUseCase;
@@ -31,6 +32,7 @@ public class VehicleService {
     private final UpdateVehicleMileageUseCase updateVehicleMileageUseCase;
     private final GetVehicleUseCase getVehicleUseCase;
     private final GetVehicleMaintenancesUseCase getVehicleMaintenancesUseCase;
+    private final GetActiveMaintenancesUseCase getActiveMaintenancesUseCase;
     private final CheckVehicleAvailabilityUseCase checkVehicleAvailabilityUseCase;
     private final VehicleMapper vehicleMapper;
     private final MaintenanceMapper maintenanceMapper;
@@ -54,6 +56,13 @@ public class VehicleService {
     public List<MaintenanceResponseDTO> getVehicleMaintenances(String licensePlate) {
         List<Maintenance> maintenances = getVehicleMaintenancesUseCase.execute(licensePlate);
         return maintenances.stream()
+                .map(maintenanceMapper::toResponseDTO)
+                .toList();
+    }
+    
+    public List<MaintenanceResponseDTO> getActiveMaintenances(String licensePlate) {
+        List<Maintenance> activeMaintenances = getActiveMaintenancesUseCase.execute(licensePlate);
+        return activeMaintenances.stream()
                 .map(maintenanceMapper::toResponseDTO)
                 .toList();
     }

@@ -51,6 +51,13 @@ public class VehicleController {
         return ResponseEntity.ok(response);
     }
     
+    @GetMapping("/{licensePlate}/maintenances/active")
+    public ResponseEntity<List<MaintenanceResponseDTO>> getActiveMaintenances(
+            @PathVariable String licensePlate) {
+        List<MaintenanceResponseDTO> response = vehicleService.getActiveMaintenances(licensePlate);
+        return ResponseEntity.ok(response);
+    }
+    
     @GetMapping("/{licensePlate}/availability")
     public ResponseEntity<VehicleAvailabilityResponseDTO> checkAvailability(
             @PathVariable String licensePlate) {
