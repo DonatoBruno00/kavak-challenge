@@ -109,6 +109,7 @@ http://localhost:8080/v3/api-docs
 - `VehicleNotFoundException` - Vehículo no encontrado
 - `MaintenanceNotFoundException` - Mantenimiento no encontrado
 - `InvalidStateTransitionException` - Transición de estado inválida
+- `InvalidMileageException` - Kilometraje inválido (nuevo <= actual)
 
 **Repository Interfaces**
 - `VehicleRepository`: findByLicensePlate(), existsByLicensePlate()
@@ -214,6 +215,35 @@ http://localhost:8080/v3/api-docs
 - `RegisterVehicleUseCase`: Business logic
 - `VehicleMapper`: DTO ↔ Entity mapping
 - `GlobalExceptionHandler`: Unified error handling
+
+#### 2. Actualizar Kilometraje (PATCH /api/vehicles/{licensePlate}/mileage)
+
+**Endpoint:** `PATCH /api/vehicles/{licensePlate}/mileage`
+
+**Request:**
+```json
+{
+  "currentMileage": 18500
+}
+```
+
+**Response exitosa (200 OK):**
+```json
+{
+  "id": "201bde63-33ac-449e-a2f7-547cc154af84",
+  "licensePlate": "ABC-1234",
+  "brand": "BMW",
+  "model": "135i",
+  "year": 2023,
+  "currentMileage": 18500
+}
+```
+
+**Regla de negocio:** El nuevo kilometraje debe ser **mayor** al actual (el kilometraje no puede retroceder).
+
+**Errores posibles:**
+- `404 Not Found` - Vehículo no existe
+- `400 Bad Request` - Nuevo kilometraje <= actual
 
 ---
 

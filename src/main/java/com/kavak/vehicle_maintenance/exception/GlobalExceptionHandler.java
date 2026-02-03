@@ -23,8 +23,8 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
     
-    @ExceptionHandler(InvalidStateTransitionException.class)
-    public ResponseEntity<ErrorResponseDTO> handleInvalidStateTransition(InvalidStateTransitionException ex) {
+    @ExceptionHandler({InvalidStateTransitionException.class, InvalidMileageException.class})
+    public ResponseEntity<ErrorResponseDTO> handleBusinessRuleViolation(DomainException ex) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
     
