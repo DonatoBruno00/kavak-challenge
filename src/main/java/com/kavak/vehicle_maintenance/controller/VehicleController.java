@@ -3,6 +3,7 @@ package com.kavak.vehicle_maintenance.controller;
 import com.kavak.vehicle_maintenance.dto.request.UpdateMileageRequestDTO;
 import com.kavak.vehicle_maintenance.dto.request.VehicleRequestDTO;
 import com.kavak.vehicle_maintenance.dto.response.MaintenanceResponseDTO;
+import com.kavak.vehicle_maintenance.dto.response.VehicleAvailabilityResponseDTO;
 import com.kavak.vehicle_maintenance.dto.response.VehicleResponseDTO;
 import com.kavak.vehicle_maintenance.service.VehicleService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,6 +48,13 @@ public class VehicleController {
     public ResponseEntity<List<MaintenanceResponseDTO>> getVehicleMaintenances(
             @PathVariable String licensePlate) {
         List<MaintenanceResponseDTO> response = vehicleService.getVehicleMaintenances(licensePlate);
+        return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/{licensePlate}/availability")
+    public ResponseEntity<VehicleAvailabilityResponseDTO> checkAvailability(
+            @PathVariable String licensePlate) {
+        VehicleAvailabilityResponseDTO response = vehicleService.checkAvailability(licensePlate);
         return ResponseEntity.ok(response);
     }
 }

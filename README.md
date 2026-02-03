@@ -396,6 +396,35 @@ http://localhost:8080/v3/api-docs
 **Errores posibles:**
 - `404 Not Found` - Vehículo no existe
 
+#### 7. Verificar Disponibilidad del Vehículo (GET /api/vehicles/{licensePlate}/availability)
+
+**Endpoint:** `GET /api/vehicles/{licensePlate}/availability`
+
+**Response exitosa (200 OK) - Vehículo disponible:**
+```json
+{
+  "licensePlate": "ABC-1234",
+  "available": true
+}
+```
+
+**Response exitosa (200 OK) - Vehículo NO disponible:**
+```json
+{
+  "licensePlate": "ABC-1234",
+  "available": false
+}
+```
+
+**Regla de negocio:**
+- Un vehículo **NO está disponible** si tiene al menos un mantenimiento con estado `PENDING` o `IN_PROGRESS`
+- Un vehículo **está disponible** si:
+  - No tiene mantenimientos, O
+  - Todos sus mantenimientos están en estado `COMPLETED` o `CANCELLED`
+
+**Errores posibles:**
+- `404 Not Found` - Vehículo no existe
+
 ---
 
 ## 🧪 Testing
