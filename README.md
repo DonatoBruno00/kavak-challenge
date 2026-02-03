@@ -245,6 +245,25 @@ http://localhost:8080/v3/api-docs
 - `404 Not Found` - Vehículo no existe
 - `400 Bad Request` - Nuevo kilometraje <= actual
 
+#### 3. Obtener Vehículo por Patente (GET /api/vehicles/{licensePlate})
+
+**Endpoint:** `GET /api/vehicles/{licensePlate}`
+
+**Response exitosa (200 OK):**
+```json
+{
+  "id": "201bde63-33ac-449e-a2f7-547cc154af84",
+  "licensePlate": "ABC-1234",
+  "brand": "BMW",
+  "model": "135i",
+  "year": 2023,
+  "currentMileage": 18500
+}
+```
+
+**Errores posibles:**
+- `404 Not Found` - Vehículo no existe
+
 ---
 
 ## 🧪 Testing
