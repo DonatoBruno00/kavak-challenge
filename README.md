@@ -264,6 +264,44 @@ http://localhost:8080/v3/api-docs
 **Errores posibles:**
 - `404 Not Found` - Vehículo no existe
 
+#### 4. Registrar Mantenimiento (POST /api/vehicles/{licensePlate}/maintenances)
+
+**Endpoint:** `POST /api/vehicles/{licensePlate}/maintenances`
+
+**Request:**
+```json
+{
+  "type": "OIL_CHANGE",
+  "description": "Regular oil change and filter replacement",
+  "estimatedCost": 150.00
+}
+```
+
+**Response exitosa (201 Created):**
+```json
+{
+  "id": "uuid",
+  "vehicleId": "vehicle-uuid",
+  "type": "OIL_CHANGE",
+  "description": "Regular oil change and filter replacement",
+  "creationDate": "2026-02-03T15:56:00",
+  "status": "PENDING",
+  "estimatedCost": 150.00,
+  "finalCost": null
+}
+```
+
+**Tipos de mantenimiento:** `OIL_CHANGE`, `BRAKES`, `ENGINE`, `TIRES`, `TRANSMISSION`, `GENERAL`
+
+**Notas:**
+- Estado inicial siempre `PENDING`
+- `creationDate` se asigna automáticamente
+- `finalCost` es null hasta completar el mantenimiento
+
+**Errores posibles:**
+- `404 Not Found` - Vehículo no existe
+- `400 Bad Request` - Validación fallida
+
 ---
 
 ## 🧪 Testing
