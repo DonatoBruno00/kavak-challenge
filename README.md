@@ -349,6 +349,53 @@ http://localhost:8080/v3/api-docs
 - `404 Not Found` - Mantenimiento no existe
 - `400 Bad Request` - Transición de estado inválida o falta `finalCost`
 
+#### 6. Obtener Mantenimientos de un Vehículo (GET /api/vehicles/{licensePlate}/maintenances)
+
+**Endpoint:** `GET /api/vehicles/{licensePlate}/maintenances`
+
+**Response exitosa (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "vehicleId": 1,
+    "type": "OIL_CHANGE",
+    "description": "Regular oil change",
+    "creationDate": "2026-02-03T15:56:00",
+    "status": "PENDING",
+    "estimatedCost": 150.00,
+    "finalCost": null
+  },
+  {
+    "id": 2,
+    "vehicleId": 1,
+    "type": "BRAKES",
+    "description": "Brake inspection",
+    "creationDate": "2026-02-01T10:30:00",
+    "status": "IN_PROGRESS",
+    "estimatedCost": 300.00,
+    "finalCost": null
+  },
+  {
+    "id": 3,
+    "vehicleId": 1,
+    "type": "TIRES",
+    "description": "Tire replacement",
+    "creationDate": "2026-01-25T14:20:00",
+    "status": "COMPLETED",
+    "estimatedCost": 500.00,
+    "finalCost": 520.00
+  }
+]
+```
+
+**Casos especiales:**
+- Retorna lista vacía `[]` si el vehículo no tiene mantenimientos
+- Retorna todos los mantenimientos (PENDING, IN_PROGRESS, COMPLETED, CANCELLED)
+
+**Errores posibles:**
+- `404 Not Found` - Vehículo no existe
+
 ---
 
 ## 🧪 Testing
