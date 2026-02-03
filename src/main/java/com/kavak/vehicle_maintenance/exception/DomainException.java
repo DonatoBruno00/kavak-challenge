@@ -1,4 +1,4 @@
-package com.kavak.vehicle_maintenance.domain.exception;
+package com.kavak.vehicle_maintenance.exception;
 
 public abstract class DomainException extends RuntimeException {
     

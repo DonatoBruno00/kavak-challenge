@@ -1,5 +1,7 @@
-package com.kavak.vehicle_maintenance.domain.entity;
+package com.kavak.vehicle_maintenance.domain;
 
+import com.kavak.vehicle_maintenance.domain.enums.MaintenanceStatus;
+import com.kavak.vehicle_maintenance.domain.enums.MaintenanceType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

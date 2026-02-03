@@ -11,16 +11,28 @@ API REST para gestionar operaciones de mantenimiento de autos usados, desarrolla
 - **Lombok**
 - **Maven**
 - **Bean Validation**
+- **Springdoc OpenAPI** (Swagger)
+- **JUnit 5 + Mockito** (Testing)
 
 ## 🏗️ Arquitectura
 
-Este proyecto sigue **Clean Architecture** con separación explícita de capas:
+Este proyecto sigue principios de **Clean Architecture** con separación explícita de capas:
 
 ```
-presentation/     → Capa HTTP (Controllers, DTOs, Exception Handlers)
-application/      → Capa de orquestación (Services, Use Cases, Mappers)
-domain/           → Lógica de negocio (Entities, Enums, Repository interfaces, Domain Exceptions)
-infrastructure/   → Implementación técnica (JPA repositories, Configs)
+com.kavak.vehicle_maintenance/
+├── controller/      → REST Controllers
+├── service/         → Orchestration layer
+├── usecase/         → Business logic (Use Cases)
+├── mapper/          → DTO ↔ Entity mappers
+├── dto/
+│   ├── request/     → Request DTOs
+│   └── response/    → Response DTOs
+├── repository/      → Spring Data JPA repositories
+├── exception/       → Custom exceptions + Global handler
+├── domain/          → Core domain
+│   ├── enums/       → Domain enums
+│   └── entities     → JPA entities (data structures)
+└── config/          → Spring configurations
 ```
 
 **Flujo:** `Controller → Service → UseCase → Repository → Database`
@@ -37,20 +49,20 @@ infrastructure/   → Implementación técnica (JPA repositories, Configs)
 
 ```bash
 # Iniciar PostgreSQL + Spring Boot
-docker-compose up -d
+docker compose up -d
 
 # Ver logs
-docker-compose logs -f app
+docker compose logs -f app
 
 # Detener
-docker-compose down
+docker compose down
 ```
 
 **Opción 2: Solo DB en Docker + App Local**
 
 ```bash
 # Iniciar solo PostgreSQL
-docker-compose up -d postgres
+docker compose up -d postgres
 
 # Ejecutar app localmente
 ./mvnw spring-boot:run
@@ -58,15 +70,29 @@ docker-compose up -d postgres
 
 La aplicación estará disponible en `http://localhost:8080`
 
-## 📦 Estado de Implementación
+## 📚 Documentación API
 
-### ✅ Fase 1: Docker & Database Setup
+### Swagger UI
+```
+http://localhost:8080/swagger-ui/index.html
+```
+
+### OpenAPI JSON
+```
+http://localhost:8080/v3/api-docs
+```
+
+---
+
+## ✅ Estado de Implementación
+
+### Fase 1: Docker & Database Setup ✓
 - PostgreSQL 15 en contenedor Docker
 - Spring Boot configurado con JPA/Hibernate
 - Multi-stage build optimizado
 - Healthcheck de base de datos
 
-### ✅ Fase 2: Domain Layer (Clean Architecture)
+### Fase 2: Domain Layer ✓
 
 **Entities (Estructuras de datos puras)**
 - `Vehicle` - id, licensePlate, brand, model, year, currentMileage
@@ -89,32 +115,141 @@ La aplicación estará disponible en `http://localhost:8080`
 - `MaintenanceRepository`: findByVehicleId(), findByVehicleIdAndStatus()
 
 **Database Schema**
-```sql
--- vehicles: id (PK), license_plate (UNIQUE), brand, model, year, current_mileage
--- maintenances: id (PK), vehicle_id (FK), type, status, creation_date, estimated_cost, final_cost
--- Relationship: Vehicle (1) → Maintenance (N)
+
+```
+┌─────────────────────────────┐
+│         VEHICLES            │
+├─────────────────────────────┤
+│ id (UUID, PK)               │
+│ license_plate (VARCHAR, UQ) │
+│ brand (VARCHAR)             │
+│ model (VARCHAR)             │
+│ year (INTEGER)              │
+│ current_mileage (INTEGER)   │
+└─────────────────────────────┘
+         │ 1
+         │
+         │ has many
+         │
+         │ *
+┌─────────────────────────────┐
+│       MAINTENANCES          │
+├─────────────────────────────┤
+│ id (UUID, PK)               │
+│ vehicle_id (UUID, FK)       │
+│ type (VARCHAR)              │
+│ description (TEXT)          │
+│ creation_date (TIMESTAMP)   │
+│ status (VARCHAR)            │
+│ estimated_cost (DECIMAL)    │
+│ final_cost (DECIMAL)        │
+└─────────────────────────────┘
 ```
 
-**Constraints**
-- Unique constraint en `license_plate`
-- Foreign key: `maintenances.vehicle_id` → `vehicles.id`
-- Check constraints en enums (status, type)
-- BigDecimal con precision=10, scale=2 para campos monetarios
+### Fase 3: Use Cases Implementados ✓
 
-### 🚧 Próximas Fases
-- **Fase 3:** Use Cases (lógica de negocio)
-- **Fase 4:** Services, Mappers, DTOs
-- **Fase 5:** Controllers, Exception Handlers
-- **Fase 6:** Tests
+#### 1. Registrar Vehículo (POST /api/vehicles)
 
-## 🎯 Decisiones de Diseño
+**Endpoint:** `POST /api/vehicles`
 
-**Clean Architecture:** Separación de responsabilidades, lógica de negocio independiente de frameworks. Domain layer sin dependencias externas.
+**Request:**
+```json
+{
+  "licensePlate": "ABC-1234",
+  "brand": "BMW",
+  "model": "135i",
+  "year": 2023,
+  "currentMileage": 15000
+}
+```
 
-**Entities como Data Structures:** Toda la lógica de negocio se implementa en Use Cases, no en entidades. Esto facilita testing y mantiene las entidades como POJOs simples.
+**Response exitosa (201 Created):**
+```json
+{
+  "id": "201bde63-33ac-449e-a2f7-547cc154af84",
+  "licensePlate": "ABC-1234",
+  "brand": "BMW",
+  "model": "135i",
+  "year": 2023,
+  "currentMileage": 15000
+}
+```
 
-**BigDecimal para dinero:** Precision=10, scale=2 para evitar errores de punto flotante en cálculos monetarios.
+**Validaciones:**
+- `licensePlate`: Obligatorio, máximo 20 caracteres, único
+- `brand`: Obligatorio, máximo 50 caracteres
+- `model`: Obligatorio, máximo 50 caracteres
+- `year`: Obligatorio, entre 1900 y 2100
+- `currentMileage`: Obligatorio, mayor o igual a 0
 
-**Spring Data JPA:** Repository interfaces sin implementación manual, Spring genera el código automáticamente.
+**Errores posibles:**
 
-**Docker:** Entorno reproducible, setup simplificado (un solo comando), aplicación portable con multi-stage build optimizado.
+**409 Conflict** - Patente duplicada:
+```json
+{
+  "timestamp": "2026-02-03T13:59:26.640868923",
+  "status": 409,
+  "error": "Conflict",
+  "message": "Vehicle with license plate 'ABC-1234' already exists"
+}
+```
+
+**400 Bad Request** - Validación fallida:
+```json
+{
+  "timestamp": "2026-02-03T13:59:28.192734340",
+  "status": 400,
+  "error": "Validation Failed",
+  "message": "Invalid input data",
+  "details": [
+    "licensePlate: License plate is required",
+    "year: Year must be greater than or equal to 1900"
+  ]
+}
+```
+
+**Componentes:**
+- `VehicleController`: REST endpoint
+- `VehicleService`: Orchestration
+- `RegisterVehicleUseCase`: Business logic
+- `VehicleMapper`: DTO ↔ Entity mapping
+- `GlobalExceptionHandler`: Unified error handling
+
+---
+
+## 🧪 Testing
+
+### Ejecutar todos los tests
+```bash
+./mvnw test
+```
+## 🗄️ Conectar a la base de datos
+
+**DBeaver / pgAdmin:**
+```
+Host: localhost
+Port: 5432
+Database: vehicle_maintenance
+Username: kavak
+Password: kavak123
+```
+
+**Ver datos insertados:**
+```sql
+SELECT * FROM vehicles ORDER BY license_plate;
+SELECT * FROM maintenances WHERE vehicle_id = '<uuid>';
+```
+---
+
+## 📝 Notas de Desarrollo
+- Cada use case se implementa en su propia branch
+- Clean commits siguiendo Conventional Commits
+- Tests obligatorios para cada use case
+---
+
+## 🤝 Convenciones de Código
+- **Entities**: Singular, sin lógica
+- **DTOs**: `*RequestDTO`, `*ResponseDTO`
+- **Use Cases**: `*UseCase` con verbo + sustantivo
+- **Tests**: Un método por escenario, nombres descriptivos
+- **Validaciones**: Bean Validation en DTOs, lógica de negocio en Use Cases
