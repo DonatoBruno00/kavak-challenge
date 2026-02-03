@@ -1,5 +1,6 @@
 package com.kavak.vehicle_maintenance.controller;
 
+import com.kavak.vehicle_maintenance.dto.request.UpdateMileageRequestDTO;
 import com.kavak.vehicle_maintenance.dto.request.VehicleRequestDTO;
 import com.kavak.vehicle_maintenance.dto.response.VehicleResponseDTO;
 import com.kavak.vehicle_maintenance.service.VehicleService;
@@ -23,5 +24,13 @@ public class VehicleController {
             @Valid @RequestBody VehicleRequestDTO requestDTO) {
         VehicleResponseDTO response = vehicleService.registerVehicle(requestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+    
+    @PatchMapping("/{licensePlate}/mileage")
+    public ResponseEntity<VehicleResponseDTO> updateMileage(
+            @PathVariable String licensePlate,
+            @Valid @RequestBody UpdateMileageRequestDTO requestDTO) {
+        VehicleResponseDTO response = vehicleService.updateMileage(licensePlate, requestDTO);
+        return ResponseEntity.ok(response);
     }
 }
