@@ -41,7 +41,6 @@ http://localhost:8080/swagger-ui/index.html
 ---
 
 ## 🛠️ Stack Tecnológico
-
 - **Java 17**
 - **Spring Boot 3.5.10**
 - **PostgreSQL 15** (Docker)
@@ -52,8 +51,6 @@ http://localhost:8080/swagger-ui/index.html
 - **Flyway** (Database Migrations)
 - **Springdoc OpenAPI** (Swagger)
 - **JUnit 5 + Mockito** (Testing)
-- **Flyway** (Database Migrations)
-
 ---
 
 ## 🏗️ Arquitectura
