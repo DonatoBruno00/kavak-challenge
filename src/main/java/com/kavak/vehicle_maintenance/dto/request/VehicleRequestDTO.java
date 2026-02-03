@@ -16,6 +16,10 @@ public class VehicleRequestDTO {
     @Schema(description = "Vehicle license plate", example = "ABC-1234")
     @NotBlank(message = "License plate is required")
     @Size(max = 20, message = "License plate must not exceed 20 characters")
+    @Pattern(
+        regexp = "^[A-Z0-9]{2,4}-?[A-Z0-9]{2,4}$",
+        message = "License plate format is invalid. Expected format: ABC-1234 or ABC1234"
+    )
     private String licensePlate;
     
     @Schema(description = "Vehicle brand", example = "BMW")
