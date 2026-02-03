@@ -3,7 +3,6 @@ package com.kavak.vehicle_maintenance.testdata;
 import com.kavak.vehicle_maintenance.domain.Vehicle;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 /**
  * Test data factory for Vehicle entities.
@@ -38,7 +37,7 @@ public class VehicleTestData {
     
     public static Vehicle createValidVehicleWithId() {
         return Vehicle.builder()
-                .id(UUID.randomUUID())
+                .id(1L)
                 .licensePlate(VALID_LICENSE_PLATE)
                 .brand(BRAND_BMW)
                 .model(MODEL_135I)
@@ -61,7 +60,7 @@ public class VehicleTestData {
     
     public static Vehicle createAnotherValidVehicleWithId() {
         return Vehicle.builder()
-                .id(UUID.randomUUID())
+                .id(2L)
                 .licensePlate(ANOTHER_LICENSE_PLATE)
                 .brand(BRAND_AUDI)
                 .model(MODEL_A4)

@@ -17,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 import static com.kavak.vehicle_maintenance.testdata.VehicleTestData.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -89,7 +88,7 @@ class RegisterMaintenanceUseCaseTest {
     
     private Maintenance createTestMaintenanceWithId(Vehicle vehicle) {
         return Maintenance.builder()
-                .id(UUID.randomUUID())
+                .id(1L)
                 .vehicle(vehicle)
                 .type(MaintenanceType.OIL_CHANGE)
                 .description("Regular oil change")

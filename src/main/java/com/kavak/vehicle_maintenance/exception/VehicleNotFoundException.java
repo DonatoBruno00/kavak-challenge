@@ -1,14 +1,12 @@
 package com.kavak.vehicle_maintenance.exception;
 
-import java.util.UUID;
-
 public class VehicleNotFoundException extends DomainException {
     
-    public VehicleNotFoundException(UUID id) {
-        super(String.format("Vehicle with id '%s' not found", id));
+    public VehicleNotFoundException(Long id) {
+        super("Vehicle with id '" + id + "' not found");
     }
     
     public VehicleNotFoundException(String licensePlate) {
-        super(String.format("Vehicle with license plate '%s' not found", licensePlate));
+        super("Vehicle with license plate '" + licensePlate + "' not found");
     }
 }

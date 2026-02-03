@@ -1,10 +1,8 @@
 package com.kavak.vehicle_maintenance.exception;
 
-import java.util.UUID;
-
 public class MaintenanceNotFoundException extends DomainException {
     
-    public MaintenanceNotFoundException(UUID id) {
-        super(String.format("Maintenance with id '%s' not found", id));
+    public MaintenanceNotFoundException(Long id) {
+        super("Maintenance with id '" + id + "' not found");
     }
 }
