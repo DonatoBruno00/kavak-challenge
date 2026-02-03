@@ -121,7 +121,7 @@ http://localhost:8080/v3/api-docs
 ┌─────────────────────────────┐
 │         VEHICLES            │
 ├─────────────────────────────┤
-│ id (UUID, PK)               │
+│ id (BIGINT, PK, IDENTITY)   │
 │ license_plate (VARCHAR, UQ) │
 │ brand (VARCHAR)             │
 │ model (VARCHAR)             │
@@ -136,8 +136,8 @@ http://localhost:8080/v3/api-docs
 ┌─────────────────────────────┐
 │       MAINTENANCES          │
 ├─────────────────────────────┤
-│ id (UUID, PK)               │
-│ vehicle_id (UUID, FK)       │
+│ id (BIGINT, PK, IDENTITY)   │
+│ vehicle_id (BIGINT, FK)     │
 │ type (VARCHAR)              │
 │ description (TEXT)          │
 │ creation_date (TIMESTAMP)   │
@@ -167,7 +167,7 @@ http://localhost:8080/v3/api-docs
 **Response exitosa (201 Created):**
 ```json
 {
-  "id": "201bde63-33ac-449e-a2f7-547cc154af84",
+  "id": 1,
   "licensePlate": "ABC-1234",
   "brand": "BMW",
   "model": "135i",
@@ -230,7 +230,7 @@ http://localhost:8080/v3/api-docs
 **Response exitosa (200 OK):**
 ```json
 {
-  "id": "201bde63-33ac-449e-a2f7-547cc154af84",
+  "id": 1,
   "licensePlate": "ABC-1234",
   "brand": "BMW",
   "model": "135i",
@@ -252,7 +252,7 @@ http://localhost:8080/v3/api-docs
 **Response exitosa (200 OK):**
 ```json
 {
-  "id": "201bde63-33ac-449e-a2f7-547cc154af84",
+  "id": 1,
   "licensePlate": "ABC-1234",
   "brand": "BMW",
   "model": "135i",
@@ -280,8 +280,8 @@ http://localhost:8080/v3/api-docs
 **Response exitosa (201 Created):**
 ```json
 {
-  "id": "uuid",
-  "vehicleId": "vehicle-uuid",
+  "id": 1,
+  "vehicleId": 1,
   "type": "OIL_CHANGE",
   "description": "Regular oil change and filter replacement",
   "creationDate": "2026-02-03T15:56:00",
@@ -301,6 +301,53 @@ http://localhost:8080/v3/api-docs
 **Errores posibles:**
 - `404 Not Found` - Vehículo no existe
 - `400 Bad Request` - Validación fallida
+
+#### 5. Cambiar Estado de Mantenimiento (PATCH /api/maintenances/{maintenanceId}/status)
+
+**Endpoint:** `PATCH /api/maintenances/{maintenanceId}/status`
+
+**Request (cambiar a EN_PROGRESO):**
+```json
+{
+  "newStatus": "IN_PROGRESS"
+}
+```
+
+**Request (completar con costo final):**
+```json
+{
+  "newStatus": "COMPLETED",
+  "finalCost": 175.50
+}
+```
+
+**Response exitosa (200 OK):**
+```json
+{
+  "id": 1,
+  "vehicleId": 1,
+  "type": "OIL_CHANGE",
+  "description": "Regular oil change and filter replacement",
+  "creationDate": "2026-02-03T15:56:00",
+  "status": "COMPLETED",
+  "estimatedCost": 150.00,
+  "finalCost": 175.50
+}
+```
+
+**Transiciones válidas:**
+- `PENDING` → `IN_PROGRESS`, `CANCELLED`
+- `IN_PROGRESS` → `COMPLETED`, `CANCELLED`
+- `COMPLETED` → (ninguna, estado final)
+- `CANCELLED` → (ninguna, estado final)
+
+**Reglas de negocio:**
+- `finalCost` es **obligatorio** cuando se cambia a `COMPLETED`
+- Estados `COMPLETED` y `CANCELLED` son finales (no permiten más cambios)
+
+**Errores posibles:**
+- `404 Not Found` - Mantenimiento no existe
+- `400 Bad Request` - Transición de estado inválida o falta `finalCost`
 
 ---
 

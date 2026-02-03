@@ -6,12 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.UUID;
 
 @Repository
-public interface MaintenanceRepository extends JpaRepository<Maintenance, UUID> {
+public interface MaintenanceRepository extends JpaRepository<Maintenance, Long> {
     
-    List<Maintenance> findByVehicleId(UUID vehicleId);
+    List<Maintenance> findByVehicleId(Long vehicleId);
     
-    List<Maintenance> findByVehicleIdAndStatus(UUID vehicleId, MaintenanceStatus status);
+    List<Maintenance> findByVehicleIdAndStatus(Long vehicleId, MaintenanceStatus status);
 }
