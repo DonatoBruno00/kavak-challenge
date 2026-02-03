@@ -26,6 +26,12 @@ public class VehicleController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     
+    @GetMapping("/{licensePlate}")
+    public ResponseEntity<VehicleResponseDTO> getVehicle(@PathVariable String licensePlate) {
+        VehicleResponseDTO response = vehicleService.getVehicle(licensePlate);
+        return ResponseEntity.ok(response);
+    }
+    
     @PatchMapping("/{licensePlate}/mileage")
     public ResponseEntity<VehicleResponseDTO> updateMileage(
             @PathVariable String licensePlate,
