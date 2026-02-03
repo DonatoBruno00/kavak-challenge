@@ -1,4 +1,4 @@
-package com.kavak.vehicle_maintenance.domain.exception;
+package com.kavak.vehicle_maintenance.exception;
 
 import com.kavak.vehicle_maintenance.domain.enums.MaintenanceStatus;
 

@@ -1,6 +1,6 @@
-package com.kavak.vehicle_maintenance.domain.repository;
+package com.kavak.vehicle_maintenance.repository;
 
-import com.kavak.vehicle_maintenance.domain.entity.Maintenance;
+import com.kavak.vehicle_maintenance.domain.Maintenance;
 import com.kavak.vehicle_maintenance.domain.enums.MaintenanceStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
